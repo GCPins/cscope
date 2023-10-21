@@ -13,7 +13,9 @@ def main():
     session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/118.0'})
 
     login(session, username, password)
-    print(get_courses(session))
+    course_list = get_courses(session)
+    assignments = get_course_assignments(session, course_list[0]['path'])
+    print(assignments)
 
 def login(session, username, password):
     session.get('https://www.gradescope.com/auth/saml/clemson')
@@ -30,7 +32,7 @@ def login(session, username, password):
     saml_response = doc.xpath('//input[@type="hidden"]/@value')
     session.post('https://www.gradescope.com/auth/saml/clemson/callback', data={'SAMLResponse': saml_response})
 
-def get_course_list(session):
+def get_courses(session):
     page = session.get('https://www.gradescope.com')
     doc = html.document_fromstring(page.content)
     courses = doc.xpath('//a[@class="courseBox"]')
@@ -40,6 +42,24 @@ def get_course_list(session):
         'short_name': course.find('h3[@class="courseBox--shortname"]').text_content(),
         'name': course.find('div[@class="courseBox--name"]').text_content(),
     }, courses))
+
+def get_course_assignments(session, path):
+    page = session.get('https://www.gradescope.com' + path)
+
+    doc = html.document_fromstring(page.content)
+    elements = doc.xpath('//table/tbody/tr')
+
+    assignments = []
+
+    for e in elements:
+        if e.find_class('progressBar'):
+            title_element = e.find('th[@class="table--primaryLink"]/a')
+            assignments.append({
+                'title': title_element.text_content(),
+                'assignment_id': title_element.get('href'),
+            })
+
+    return assignments
 
 if __name__ == '__main__':
     main()
