@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import getpass
+import iterfzf
 from lxml import html
 import requests
 import sys 
@@ -16,9 +17,15 @@ def main():
     session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/118.0'})
 
     login(session, username, password)
+
     course_list = get_courses(session)
-    assignments = get_course_assignments(session, course_list[0]['path'])
-    submit_submission(session, assignments[0]['path'], ['helo'])
+    course_name = iterfzf.iterfzf(map(lambda x: x['name'], course_list))
+
+    assignments = get_course_assignments(session, list(filter(lambda x: x['name'] == course_name, course_list))[0]['path'])
+    assignment_name = iterfzf.iterfzf(map(lambda x: x['title'], assignments))
+
+    print('submitting to ' + assignment_name)
+    submit_submission(session, list(filter(lambda x: x['title'] == assignment_name, assignments))[0]['path'], input('enter files (separated by spaces): ').split(' '))
 
 def login(session, username, password):
     session.get('https://www.gradescope.com/auth/saml/clemson')
@@ -67,7 +74,7 @@ def get_course_assignments(session, path):
 def submit_submission(session, path, files):
     page = session.get('https://www.gradescope.com' + path)
     doc = html.document_fromstring(page.content)
-    authenticity_token = doc.xpath('//input[@name="authenticity_token"]/@value')[0]
+    authenticity_token = doc.xpath('//meta[@name="csrf-token"]/@content')[0]
 
     data = (
         ('utf8', '✓'),
@@ -82,9 +89,13 @@ def submit_submission(session, path, files):
 
     print('https://www.gradescope.com' + '/'.join(path.split('/')[:-1]))
 
-    # print(requests.Request('POST', 'https://httpbin.org/post', data=data, files=files).prepare().body.decode('utf-8'))
     submission_response = session.post('https://www.gradescope.com' + '/'.join(path.split('/')[:-1]), files=files, data=data, headers={'Accept': 'application/json'}).json()
     print(submission_response)
+
+def getCookies(cookie_jar):
+    cookie_dict = cookie_jar.get_dict(domain='www.gradescope.com')
+    found = ['%s=%s' % (name, value) for (name, value) in cookie_dict.items()]
+    return ';'.join(found)
 
 if __name__ == '__main__':
     main()
