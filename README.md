@@ -1,2 +1,5 @@
 # cscope
-Hello World project to manage Gradescope submissions from the command line.
+Clemson Hello World 2023 project to manage Gradescope submissions from the command line.
+
+
+
