@@ -5,13 +5,11 @@ import iterfzf
 from lxml import html
 import requests
 import sys 
+import os
 
 def main():
-    # session = requests.Session()
-    # submit_submission(session, '')
-    # return
-    username = input('username: ')
-    password = getpass.getpass('password: ')
+    username = input('\033[1musername: \033[0m')
+    password = getpass.getpass('\033[1mpassword: \033[0m')
 
     session = requests.Session()
     session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/118.0'})
@@ -24,8 +22,16 @@ def main():
     assignments = get_course_assignments(session, list(filter(lambda x: x['name'] == course_name, course_list))[0]['path'])
     assignment_name = iterfzf.iterfzf(map(lambda x: x['title'], assignments))
 
-    print('submitting to ' + assignment_name)
-    submit_submission(session, list(filter(lambda x: x['title'] == assignment_name, assignments))[0]['path'], input('enter files (separated by spaces): ').split(' '))
+    print('\033[1msubmitting to \033[0m' + assignment_name)
+    file_input = input('\033[1menter files (separated by spaces) OR enter directory: \033[0m')
+
+    files = []
+    if (os.path.isdir(file_input)):
+        files = [os.path.join(file_input, f) for f in os.listdir(file_input) if os.path.isfile(os.path.join(file_input, f))]
+    else:
+        files = file_input.split(' ')
+
+    submit_submission(session, list(filter(lambda x: x['title'] == assignment_name, assignments))[0]['path'], files)
 
 def login(session, username, password):
     session.get('https://www.gradescope.com/auth/saml/clemson')
@@ -87,15 +93,11 @@ def submit_submission(session, path, files):
         *tuple(map(lambda f: ('submission[files][]', (f, open(f, 'rb'), 'application/octet-stream')), files)),
     )
 
-    print('https://www.gradescope.com' + '/'.join(path.split('/')[:-1]))
-
     submission_response = session.post('https://www.gradescope.com' + '/'.join(path.split('/')[:-1]), files=files, data=data, headers={'Accept': 'application/json'}).json()
-    print(submission_response)
-
-def getCookies(cookie_jar):
-    cookie_dict = cookie_jar.get_dict(domain='www.gradescope.com')
-    found = ['%s=%s' % (name, value) for (name, value) in cookie_dict.items()]
-    return ';'.join(found)
+    if submission_response['success'] == True:
+        print('submitted! 🥳 visit https://www.gradescope.com' + submission_response['url'])
+    else:
+        print('unsuccesful! 🤮')
 
 if __name__ == '__main__':
     main()
