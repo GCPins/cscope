@@ -1,0 +1,2 @@
+# cscope
+Hello World project.
