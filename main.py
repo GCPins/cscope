@@ -6,6 +6,9 @@ import requests
 import sys 
 
 def main():
+    # session = requests.Session()
+    # submit_submission(session, '')
+    # return
     username = input('username: ')
     password = getpass.getpass('password: ')
 
@@ -15,7 +18,7 @@ def main():
     login(session, username, password)
     course_list = get_courses(session)
     assignments = get_course_assignments(session, course_list[0]['path'])
-    print(assignments)
+    submit_submission(session, assignments[0]['path'], ['helo'])
 
 def login(session, username, password):
     session.get('https://www.gradescope.com/auth/saml/clemson')
@@ -56,10 +59,32 @@ def get_course_assignments(session, path):
             title_element = e.find('th[@class="table--primaryLink"]/a')
             assignments.append({
                 'title': title_element.text_content(),
-                'assignment_id': title_element.get('href'),
+                'path': title_element.get('href'),
             })
 
     return assignments
+
+def submit_submission(session, path, files):
+    page = session.get('https://www.gradescope.com' + path)
+    doc = html.document_fromstring(page.content)
+    authenticity_token = doc.xpath('//input[@name="authenticity_token"]/@value')[0]
+
+    data = (
+        ('utf8', '✓'),
+        ('authenticity_token', authenticity_token),
+        ('submission[method]', 'upload'),
+        ('submission[leaderboard_name]', ''),
+    )
+
+    files = (
+        *tuple(map(lambda f: ('submission[files][]', (f, open(f, 'rb'), 'application/octet-stream')), files)),
+    )
+
+    print('https://www.gradescope.com' + '/'.join(path.split('/')[:-1]))
+
+    # print(requests.Request('POST', 'https://httpbin.org/post', data=data, files=files).prepare().body.decode('utf-8'))
+    submission_response = session.post('https://www.gradescope.com' + '/'.join(path.split('/')[:-1]), files=files, data=data, headers={'Accept': 'application/json'}).json()
+    print(submission_response)
 
 if __name__ == '__main__':
     main()
