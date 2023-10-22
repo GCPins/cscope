@@ -52,7 +52,7 @@ def main():
     for f in files:
     	if (not os.path.exists(f)):
     		print("A file/folder you entered does not exist, or an error occured.")
-    		sys.exit(1)
+    		sys.exist(1)
 
     # upload/submit the file(s) provided to the chosen assignment
     submit_submission(session, list(filter(lambda x: x['title'] == assignment_name, assignments))[0]['path'], files)
