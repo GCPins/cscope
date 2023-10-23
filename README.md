@@ -3,6 +3,8 @@ Clemson Hello World 2023 project to manage Gradescope submissions with a GUI mad
 
 DOWNLOAD COMPLETED BUILDS AT:
 https://quantiset.itch.io/cscope
+*Must have Python 3+
+*Make sure to install all dependencies (lxml, requests)
 
 Winner of the "Wild Card" award.
 
