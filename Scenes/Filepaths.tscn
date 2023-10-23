@@ -1,0 +1,151 @@
+[gd_scene load_steps=2 format=3 uid="uid://c3bbxe36xkfe1"]
+
+[ext_resource type="Script" path="res://Scripts/Filepaths.gd" id="1_yv0cf"]
+
+[node name="Filepaths" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_yv0cf")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="CenterContainer"]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="CenterContainer/Panel"]
+layout_mode = 2
+offset_left = -464.0
+offset_top = -266.0
+offset_right = 470.0
+offset_bottom = 262.0
+size_flags_vertical = 3
+mouse_filter = 2
+color = Color(0.00784314, 0.0117647, 0.0470588, 0.403922)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(900, 500)
+layout_mode = 2
+
+[node name="UpperDisplay" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="LoginLabel" type="Label" parent="CenterContainer/VBoxContainer/UpperDisplay"]
+layout_mode = 2
+text = "Logged in as: "
+
+[node name="Container" type="Container" parent="CenterContainer/VBoxContainer/UpperDisplay"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="LogoffButton" type="Button" parent="CenterContainer/VBoxContainer/UpperDisplay"]
+layout_mode = 2
+text = "Logoff"
+
+[node name="HSeparator4" type="HSeparator" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="CenterLists" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Courses" type="VBoxContainer" parent="CenterContainer/VBoxContainer/CenterLists"]
+layout_direction = 2
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/CenterLists/Courses"]
+layout_mode = 2
+text = "Courses"
+
+[node name="ItemList" type="ItemList" parent="CenterContainer/VBoxContainer/CenterLists/Courses"]
+layout_mode = 2
+size_flags_vertical = 3
+same_column_width = true
+
+[node name="VSeparator" type="VSeparator" parent="CenterContainer/VBoxContainer/CenterLists"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+
+[node name="Assignments" type="VBoxContainer" parent="CenterContainer/VBoxContainer/CenterLists"]
+layout_direction = 2
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/CenterLists/Assignments"]
+layout_mode = 2
+text = "Assignments"
+
+[node name="ItemList" type="ItemList" parent="CenterContainer/VBoxContainer/CenterLists/Assignments"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HSeparator3" type="HSeparator" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="Filetype" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/Filetype"]
+layout_mode = 2
+text = "Local?: "
+
+[node name="CheckBox" type="CheckBox" parent="CenterContainer/VBoxContainer/Filetype"]
+layout_mode = 2
+
+[node name="Filepath" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/Filepath"]
+layout_mode = 2
+text = "Enter Filepath:"
+
+[node name="LineEdit" type="LineEdit" parent="CenterContainer/VBoxContainer/Filepath"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FileDialog" type="FileDialog" parent="CenterContainer/VBoxContainer/Filepath"]
+size = Vector2i(392, 400)
+popup_window = true
+
+[node name="Container" type="Container" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ErrorLabel" type="RichTextLabel" parent="CenterContainer/VBoxContainer/Container"]
+custom_minimum_size = Vector2(900, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+focus_mode = 2
+fit_content = true
+selection_enabled = true
+deselect_on_focus_loss_enabled = false
+
+[node name="HSeparator" type="HSeparator" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="Submit" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Submit!"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/UpperDisplay/LogoffButton" to="." method="_on_logoff_button_pressed"]
+[connection signal="item_selected" from="CenterContainer/VBoxContainer/CenterLists/Courses/ItemList" to="." method="_on_course_list_item_selected"]
+[connection signal="item_selected" from="CenterContainer/VBoxContainer/CenterLists/Assignments/ItemList" to="." method="_on_assignment_list_item_selected"]
+[connection signal="toggled" from="CenterContainer/VBoxContainer/Filetype/CheckBox" to="." method="_on_check_box_toggled"]
+[connection signal="text_changed" from="CenterContainer/VBoxContainer/Filepath/LineEdit" to="." method="_on_line_edit_text_changed"]
+[connection signal="file_selected" from="CenterContainer/VBoxContainer/Filepath/FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/Submit" to="." method="_on_submit_pressed"]

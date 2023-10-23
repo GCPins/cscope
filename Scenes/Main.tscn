@@ -1,0 +1,88 @@
+[gd_scene load_steps=2 format=3 uid="uid://cimg183cuanxv"]
+
+[ext_resource type="Script" path="res://Scripts/Main.gd" id="1_djdmy"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_djdmy")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="CenterContainer"]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="CenterContainer/Panel"]
+layout_mode = 2
+offset_left = -464.0
+offset_top = -266.0
+offset_right = 470.0
+offset_bottom = 262.0
+size_flags_vertical = 3
+mouse_filter = 2
+color = Color(0.00784314, 0.0117647, 0.0470588, 0.403922)
+
+[node name="VBoxContainer" type="CenterContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(900, 500)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(750, 0)
+layout_mode = 2
+
+[node name="HBoxContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Domain" type="HBoxContainer" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer"]
+modulate = Color(1, 1, 1, 0.6)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer/Domain"]
+layout_mode = 2
+text = "Domain: "
+
+[node name="TextEdit" type="LineEdit" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer/Domain"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "@ada1.computing.clemson.edu"
+
+[node name="Username" type="HBoxContainer" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer/Username"]
+layout_mode = 2
+text = "Username: "
+
+[node name="TextEdit" type="LineEdit" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer/Username"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Password" type="HBoxContainer" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer/Password"]
+layout_mode = 2
+text = "Password: "
+
+[node name="TextEdit" type="LineEdit" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer/Password"]
+layout_mode = 2
+size_flags_horizontal = 3
+secret = true
+
+[node name="Button" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(125, 60)
+layout_mode = 2
+text = "Login!"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/HBoxContainer/Button" to="." method="_on_button_pressed"]
