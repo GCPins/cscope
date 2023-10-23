@@ -1,4 +1,6 @@
 # cscope
-Clemson Hello World 2023 project to manage Gradescope submissions with a GUI made in the Godot Engine
+Clemson Hello World 2023 project to manage Gradescope submissions with a GUI made in the Godot Engine with a Python backend. 
 
-DIstributed under GPL
+Won the "Wild Card" award.
+
+DIstributed under the GPL License.
