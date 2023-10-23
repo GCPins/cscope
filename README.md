@@ -4,6 +4,6 @@ Clemson Hello World 2023 project to manage Gradescope submissions with a GUI mad
 DOWNLOAD COMPLETED BUILDS AT:
 https://quantiset.itch.io/cscope
 
-Won the "Wild Card" award.
+Winner of the "Wild Card" award.
 
-DIstributed under the GPL License.
+Distributed under the GPL License (see "LICENSE.GPL").
