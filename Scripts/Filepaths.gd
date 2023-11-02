@@ -66,6 +66,10 @@ func _on_line_edit_text_changed(new_text: String):
 	filepath = new_text
 
 func _on_submit_pressed():
+	print("Submission pressed")
+	
+	$CenterContainer/VBoxContainer/Container/ErrorLabel.text = ""
+	
 	$CenterContainer/VBoxContainer/Container/ErrorLabel.set("theme_override_colors/default_color", Color.RED)
 	
 	var output := []
@@ -79,6 +83,7 @@ func _on_submit_pressed():
 	
 	var filepath_arr := filepath.split("/")
 	var filepath_ending_name: String = filepath_arr[filepath_arr.size()-1]
+	var del_queue := [filepath_ending_name]
 	
 	var files := []
 	if filepath_ending_name.ends_with(".zip"):
@@ -93,10 +98,16 @@ func _on_submit_pressed():
 		OS.execute("powershell.exe", ["-Command", "tar -xvf "+Globals.TEMP_DIR.replace(" ", "` ")+"\\"+filepath_ending_name+" -C "+\
 		Globals.TEMP_DIR.replace(" ", "` ")], output2, true)
 		print("Unzip ret: ", output2)
-
-	var targeted_file_ending_name: String = files[0].trim_suffix("/")
 	
-	output = Globals.upload_to_gradescope(tooltips[selected_course], selected_assignment, targeted_file_ending_name)
+		filepath_ending_name = files[0].trim_suffix("/")
+		del_queue = [filepath_ending_name, filepath_ending_name+".zip"]
+	
+	if DirAccess.dir_exists_absolute(Globals.TEMP_DIR+"\\"+filepath_ending_name) and Globals.withhold_queue.size() > 0:
+		print("Witholding detected... Processing...")
+		for withhold_token in Globals.withhold_queue:
+			OS.execute("powershell.exe", ["-Command", "rm -Recurse -Force "+Globals.TEMP_DIR.replace(" ", "` ") + "\\" + filepath_ending_name + "\\" + withhold_token])
+	
+	output = Globals.upload_to_gradescope(tooltips[selected_course], selected_assignment, filepath_ending_name)
 	if output != [""]:
 		if output[0].begins_with("submitted! visit"):
 			$CenterContainer/VBoxContainer/Container/ErrorLabel.set("theme_override_colors/default_color", Color.GREEN)
@@ -106,7 +117,8 @@ func _on_submit_pressed():
 			return
 	
 	var outputrm = []
-	OS.execute("powershell.exe", ["-Command", "rm -Recurse -Force "+Globals.TEMP_DIR.replace(" ", "` ")+"\\"+targeted_file_ending_name],outputrm)
+	for f_name in del_queue:
+		OS.execute("powershell.exe", ["-Command", "rm -Recurse -Force "+Globals.TEMP_DIR.replace(" ", "` ") + "\\" + f_name], outputrm)
 	print("rm output: ", outputrm)
 
 
@@ -116,3 +128,11 @@ func _on_logoff_button_pressed():
 	get_tree().change_scene_to_file("res://Scenes/Main.tscn")
 
 
+func _on_Exceptions_edit_text_changed(new_text: String):
+	if new_text == "":
+		Globals.withhold_queue = Globals.const_withhold_queue
+	
+	var queue: Array = new_text.split(",")
+	for i in range(queue.size()):
+		queue[i] = queue[i].dedent()
+	Globals.withhold_queue = queue

@@ -109,13 +109,29 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="CenterContainer/VBoxContainer/Filepath"]
 layout_mode = 2
-text = "Enter Filepath:"
+text = "Enter Path:"
 
 [node name="LineEdit" type="LineEdit" parent="CenterContainer/VBoxContainer/Filepath"]
 layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="FileDialog" type="FileDialog" parent="CenterContainer/VBoxContainer/Filepath"]
+size = Vector2i(392, 400)
+popup_window = true
+
+[node name="Exceptions" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/Exceptions"]
+layout_mode = 2
+text = "Enter Exceptions:"
+
+[node name="LineEdit" type="LineEdit" parent="CenterContainer/VBoxContainer/Exceptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "*.out, *.tmp"
+
+[node name="FileDialog" type="FileDialog" parent="CenterContainer/VBoxContainer/Exceptions"]
 size = Vector2i(392, 400)
 popup_window = true
 
@@ -148,4 +164,6 @@ text = "Submit!"
 [connection signal="toggled" from="CenterContainer/VBoxContainer/Filetype/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="text_changed" from="CenterContainer/VBoxContainer/Filepath/LineEdit" to="." method="_on_line_edit_text_changed"]
 [connection signal="file_selected" from="CenterContainer/VBoxContainer/Filepath/FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="text_changed" from="CenterContainer/VBoxContainer/Exceptions/LineEdit" to="." method="_on_Exceptions_edit_text_changed"]
+[connection signal="file_selected" from="CenterContainer/VBoxContainer/Exceptions/FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Submit" to="." method="_on_submit_pressed"]

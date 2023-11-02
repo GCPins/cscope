@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://cimg183cuanxv"]
+[gd_scene load_steps=3 format=3 uid="uid://cimg183cuanxv"]
 
 [ext_resource type="Script" path="res://Scripts/Main.gd" id="1_djdmy"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_2a744"]
+shadow_size = 2
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -36,53 +39,64 @@ color = Color(0.00784314, 0.0117647, 0.0470588, 0.403922)
 custom_minimum_size = Vector2(900, 500)
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(750, 0)
 layout_mode = 2
 
-[node name="HBoxContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+[node name="HBoxContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Domain" type="HBoxContainer" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer"]
+[node name="Domain" type="HBoxContainer" parent="CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer/HBoxContainer"]
 modulate = Color(1, 1, 1, 0.6)
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer/Domain"]
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer/HBoxContainer/Domain"]
 layout_mode = 2
 text = "Domain: "
 
-[node name="TextEdit" type="LineEdit" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer/Domain"]
+[node name="TextEdit" type="LineEdit" parent="CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer/HBoxContainer/Domain"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "@ada1.computing.clemson.edu"
 
-[node name="Username" type="HBoxContainer" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer"]
+[node name="Username" type="HBoxContainer" parent="CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer/Username"]
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer/HBoxContainer/Username"]
 layout_mode = 2
 text = "Username: "
 
-[node name="TextEdit" type="LineEdit" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer/Username"]
+[node name="TextEdit" type="LineEdit" parent="CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer/HBoxContainer/Username"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Password" type="HBoxContainer" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer"]
+[node name="Password" type="HBoxContainer" parent="CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer/Password"]
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer/HBoxContainer/Password"]
 layout_mode = 2
 text = "Password: "
 
-[node name="TextEdit" type="LineEdit" parent="CenterContainer/VBoxContainer/HBoxContainer/HBoxContainer/Password"]
+[node name="TextEdit" type="LineEdit" parent="CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer/HBoxContainer/Password"]
 layout_mode = 2
 size_flags_horizontal = 3
 secret = true
 
-[node name="Button" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+[node name="Button" type="Button" parent="CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(125, 60)
 layout_mode = 2
 text = "Login!"
 
-[connection signal="pressed" from="CenterContainer/VBoxContainer/HBoxContainer/Button" to="." method="_on_button_pressed"]
+[node name="DownloadLabel" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer"]
+visible = false
+modulate = Color(0.34902, 0.94902, 0, 1)
+layout_mode = 2
+text = "Currently Downloading Dependencies ..."
+label_settings = SubResource("LabelSettings_2a744")
+horizontal_alignment = 1
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer/Button" to="." method="_on_button_pressed"]

@@ -6,17 +6,18 @@ from lxml import html
 import requests
 import sys 
 
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+
 def main():
-    # session = requests.Session()
-    # submit_submission(session, '')
-    # return
-    username = sys.argv[1]
-    password = sys.argv[2]
 
     session = requests.Session()
     session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/118.0'})
 
-    login(session, username, password)
+    c = login()
+    session.cookies.update(c)
+
     course_list = get_courses(session)
     assignments = []
     for course in course_list:
@@ -25,6 +26,46 @@ def main():
         this_list.append(get_course_assignments(session, course['path']))
     print(course_list, assignments, sep="|")
 
+def login():
+    option = Options()
+    #option.headless = True
+    option.add_argument("--headless=new")
+    option.add_argument("--window-size=1920,1080")
+    
+
+    #print("Loading browser (please wait)...")
+
+    option.add_experimental_option('excludeSwitches', ['enable-logging'])
+
+
+    driver = webdriver.Chrome(options=option) 
+    driver.get("https://gradescope.com/auth/saml/clemson")
+
+    passwrd = driver.find_element(By.NAME, "j_password")
+    usrname = driver.find_element(By.NAME, "j_username")
+
+    usr = sys.argv[1]
+    pss = sys.argv[2]
+
+    passwrd.send_keys(pss)
+    usrname.send_keys(usr)
+
+    clickMe = driver.find_element(By.NAME, "_eventId_proceed")
+    clickMe.click()
+
+    #print("Logging in, please wait...")
+    s_cookies = driver.get_cookies()
+
+    r_cookies = {}
+    for c in s_cookies:
+        r_cookies[c['name']] = c['value']
+
+    driver.quit()
+
+    return r_cookies
+
+
+"""
 def login(session, username, password):
     session.get('https://www.gradescope.com/auth/saml/clemson')
     idp_page = session.post(
@@ -38,7 +79,8 @@ def login(session, username, password):
 
     doc = html.document_fromstring(idp_page.content)
     saml_response = doc.xpath('//input[@type="hidden"]/@value')
-    session.post('https://www.gradescope.com/auth/saml/clemson/callback', data={'SAMLResponse': saml_response})
+    r = session.post('https://www.gradescope.com/auth/saml/clemson/callback', data={'SAMLResponse': saml_response})
+"""
 
 def get_courses(session):
     page = session.get('https://www.gradescope.com')

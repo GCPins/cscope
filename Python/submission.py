@@ -9,18 +9,19 @@ import requests
 import sys 
 import os
 
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+
 # main function
 def main():
-
-    # get user input for username, and use "getpass" module to hide password
-    username = sys.argv[1]
-    password = sys.argv[2]
 
     # start new session w/ spoof & login with provided credentials
     session = requests.Session()
     session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/118.0'})
 
-    login(session, username, password)
+    c = login()
+    session.cookies.update(c)
 
     # once logged in, get list of courses/assignments
     course_list = get_courses(session)
@@ -58,8 +59,46 @@ def main():
     # upload/submit the file(s) provided to the chosen assignment
     submit_submission(session, list(filter(lambda x: x['title'] == assignment_name, assignments))[0]['path'], files)
 
+def login():
+    option = Options()
+    #option.headless = True
+    option.add_argument("--headless=new")
+    option.add_argument("--window-size=1920,1080")
+    
 
-# login function
+    #print("Loading browser (please wait)...")
+
+    option.add_experimental_option('excludeSwitches', ['enable-logging'])
+
+
+    driver = webdriver.Chrome(options=option) 
+    driver.get("https://gradescope.com/auth/saml/clemson")
+
+    passwrd = driver.find_element(By.NAME, "j_password")
+    usrname = driver.find_element(By.NAME, "j_username")
+
+    usr = sys.argv[1]
+    pss = sys.argv[2]
+
+    passwrd.send_keys(pss)
+    usrname.send_keys(usr)
+
+    clickMe = driver.find_element(By.NAME, "_eventId_proceed")
+    clickMe.click()
+
+    #print("Logging in, please wait...")
+    s_cookies = driver.get_cookies()
+
+    r_cookies = {}
+    for c in s_cookies:
+        r_cookies[c['name']] = c['value']
+
+    driver.quit()
+
+    return r_cookies
+
+
+"""
 def login(session, username, password):
     session.get('https://www.gradescope.com/auth/saml/clemson')
     idp_page = session.post(
@@ -74,7 +113,7 @@ def login(session, username, password):
     doc = html.document_fromstring(idp_page.content)
     saml_response = doc.xpath('//input[@type="hidden"]/@value')
     r = session.post('https://www.gradescope.com/auth/saml/clemson/callback', data={'SAMLResponse': saml_response})
-    
+"""
 
 # retrieves courses once logged in
 def get_courses(session):
@@ -119,7 +158,7 @@ def submit_submission(session, path, files):
         ('utf8', '✓'),
         ('authenticity_token', authenticity_token),
         ('submission[method]', 'upload'),
-        ('submission[leaderboard_name]', ''),
+        ('submission[leaderboard_name]', sys.argv[1]),
     )
 
     files = (

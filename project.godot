@@ -13,8 +13,12 @@ config_version=5
 config/name="C-Scope"
 run/main_scene="res://Scenes/Main.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
-config/icon="res://icon.svg"
+boot_splash/show_image=false
 
 [autoload]
 
 Globals="*res://Scripts/Globals.gd"
+
+[rendering]
+
+renderer/rendering_method="mobile"
