@@ -25,7 +25,7 @@ func _ready():
 		var err1 := -2
 		var err2 := -2
 		if true:#OS.has_feature("standalone"):
-			var folder : String = OS.get_executable_path().replace("/","\\").rsplit("\\",true,1)[0]
+			var folder : String = get_exe_path()
 			print("Python files not found. Checking in exe directory at: ", folder,"?")
 			dir = DirAccess.open(folder)
 			err1=dir.copy("courses.py", "user://Python/courses.py")
@@ -42,13 +42,15 @@ func _ready():
 	OS.execute("powershell.exe", ["-Command", "Get-Command -ShowCommandInfo python"], poutput)
 	PYTHON = str(poutput).trim_prefix("""["\\r\\n\\r\\nName          : python.exe\\r\\nModuleName    : \\r\\nModule        : @{Name=}\\r\\nCommandType   : Application\\r\\nDefinition    : """).trim_suffix("""\\r\\nParameterSets : {}\\r\\n\\r\\n\\r\\n\\r\\n"]""")
 	print("Python location: ", PYTHON)
+	
+	
 
 func get_list_of_classes():
 	print("Obtaining classes...")
 	
 	var output := []
 	
-	print("Executing: " + PYTHON + "\n" + TEMP_DIR+"\\courses.py" + "\n" + username +" "+ password + "\n", output, true, false)
+	print("Executing: " + PYTHON + "\n" + TEMP_DIR+"\\courses.py" + "\n" + username +" *PASS*\n", output, true, false)
 	OS.execute(PYTHON, [TEMP_DIR+"\\courses.py", username, password], output, true, false)
 	print("Execution output: ",output)
 	
@@ -74,3 +76,6 @@ func upload_to_gradescope(course: String, assignment: String, filename: String):
 	print(output)
 	
 	return output
+
+func get_exe_path():
+	return OS.get_executable_path().replace("/","\\").rsplit("\\",true,1)[0]

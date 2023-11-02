@@ -1,12 +1,18 @@
 extends Control
 
-var t = Thread.new()
+var t
 
 func _ready():
 	if not FileAccess.file_exists("user://save.save"):
+		t = Thread.new()
 		$CenterContainer/VBoxContainer/VBoxContainer/DownloadLabel.visible = true
 		$CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer/Button.disabled = true
 		t.start(_download)
+		
+		print("Running bat file:")
+		var poutput := []
+		OS.execute("powershell.exe", ["-Command", Globals.get_exe_path()+"\\makepy.bat"], poutput)
+		print(poutput)
 
 var time := 0.0
 var cached_periods := -1
@@ -16,6 +22,7 @@ func _physics_process(delta):
 		if t.wait_to_finish() == 2:
 			$CenterContainer/VBoxContainer/VBoxContainer/HBoxContainer/Button.disabled = false
 			$CenterContainer/VBoxContainer/VBoxContainer/DownloadLabel.visible = false
+			t = null
 	
 	time += delta
 	var periods := int(time/0.5)%3
