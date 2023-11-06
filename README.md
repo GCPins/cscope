@@ -7,6 +7,11 @@ Winner of the "Wild Card" award.
 
 Distributed under the GPL License (see "LICENSE.GPL").
 
+# Downloading Instruction (GUI)
+Make sure you have Python 3+ installed. To ensure this, type python --version in your terminal and ensure the version is >3
+
+Download the release from the "Releases" tab of this Github and run the .exe file. Make sure the batch files and python files are in the same directory as the .exe
+
 # Compilation Instructions
 
 Godot 4.0+ must be installed.
