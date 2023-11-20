@@ -8,8 +8,10 @@ var username: String
 var password: String 
 var domain: String
 
-const const_withhold_queue = ["*.out", "*.tmp"]
-var withhold_queue := ["*.out", "*.tmp"]
+const const_withhold_queue = ["*.out", "*.tmp", ".~nfs*"]
+var withhold_queue := const_withhold_queue
+
+var list_of_class := []
 
 func _ready():
 	
@@ -24,16 +26,16 @@ func _ready():
 		var dir: DirAccess 
 		var err1 := -2
 		var err2 := -2
-		if true:#OS.has_feature("standalone"):
-			var folder : String = get_exe_path()
-			print("Python files not found. Checking in exe directory at: ", folder,"?")
-			dir = DirAccess.open(folder)
-			err1=dir.copy("courses.py", "user://Python/courses.py")
-			err2=dir.copy("submission.py", "user://Python/submission.py")
+#		if true:#OS.has_feature("standalone"):
+#			var folder : String = get_exe_path()
+#			print("Python files not found. Checking in exe directory at: ", folder,"?")
+#			dir = DirAccess.open(folder)
+#			err1=dir.copy("courses.py", "user://Python/courses.py")
+#			err2=dir.copy("submission.py", "user://Python/submission.py")
 #		else:
-#			dir = DirAccess.open("res://Python")
-#			err1=dir.copy("res://Python/courses.py", TEMP_DIR+"\\courses.py")
-#			err2=dir.copy("res://Python/submission.py", TEMP_DIR+"\\submission.py")
+		dir = DirAccess.open("res://Python")
+		err1=dir.copy("res://Python/courses.py", TEMP_DIR+"\\courses.py")
+		err2=dir.copy("res://Python/submission.py", TEMP_DIR+"\\submission.py")
 		print("Replacing. Errnos: "+str(err1)+" "+str(err2))
 	
 	
@@ -45,7 +47,7 @@ func _ready():
 	
 	
 
-func get_list_of_classes():
+func update_list_of_classes():
 	print("Obtaining classes...")
 	
 	var output := []
@@ -66,7 +68,10 @@ func get_list_of_classes():
 	var arr_course_list = JSON.parse_string(course_list)
 	var arr_ass_list = JSON.parse_string(ass_list)
 	
-	return [arr_course_list, arr_ass_list]
+	list_of_class = [arr_course_list, arr_ass_list]
+
+func get_list_of_classes():
+	return list_of_class
 
 func upload_to_gradescope(course: String, assignment: String, filename: String):
 	var output := []

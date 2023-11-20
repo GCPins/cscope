@@ -40,6 +40,22 @@ func _ready():
 		course_dropdown.set_item_tooltip(i, course_name + ": " + tooltips[course_name])
 		i += 1
 
+var t
+var time := 0.0
+var cached_periods := -1
+func _physics_process(delta):
+	
+	if t != null and not t.is_alive():
+		match t.wait_to_finish():
+			2:
+				t = null
+	
+	time += delta
+	var periods := int(time/0.5)%3
+	if cached_periods != periods and t != null:
+		cached_periods = periods+1
+		$CenterContainer/VBoxContainer/Container/LoadingLabel.text = \
+			"Loading "+".".repeat(cached_periods)
 
 func _on_course_list_item_selected(index: int):
 	selected_course = courses[index]
@@ -67,18 +83,25 @@ func _on_line_edit_text_changed(new_text: String):
 
 func _on_submit_pressed():
 	print("Submission pressed")
+	$CenterContainer/VBoxContainer/Container/LoadingLabel.visible = true
 	
-	$CenterContainer/VBoxContainer/Container/ErrorLabel.text = ""
+	t = Thread.new()
+	t.start(_submit.bind(Globals, $CenterContainer/VBoxContainer/Container/ErrorLabel))
+
+func _submit(globals, error_label):
 	
-	$CenterContainer/VBoxContainer/Container/ErrorLabel.set("theme_override_colors/default_color", Color.RED)
+	error_label.visible = true
+	error_label.text = ""
+	
+	error_label.set("theme_override_colors/default_color", Color.RED)
 	
 	var output := []
-	OS.execute("scp", ["-r",Globals.username+Globals.domain+":/home/"+Globals.username+"/"+filepath, Globals.TEMP_DIR], output, true, true)
+	OS.execute("scp", ["-r",globals.username+globals.domain+":/home/"+globals.username+"/"+filepath, globals.TEMP_DIR], output, true, true)
 	if output != [""]:
 		if output[0].begins_with("scp: "):
-			$CenterContainer/VBoxContainer/Container/ErrorLabel.text = "File " + output[0].split(" ")[1] + " does not exist in " + Globals.domain
+			error_label.text = "File " + output[0].split(" ")[1] + " does not exist in " + globals.domain
 		else:
-			$CenterContainer/VBoxContainer/Container/ErrorLabel.text = "Uncaught error (report): " + str(output)
+			error_label.text = "Uncaught error (report): " + str(output)
 		return
 	
 	var filepath_arr := filepath.split("/")
@@ -88,45 +111,45 @@ func _on_submit_pressed():
 	var files := []
 	if filepath_ending_name.ends_with(".zip"):
 		
-		OS.execute("powershell.exe", ["-Command", "tar -tf "+Globals.TEMP_DIR.replace(" ", "` ")+"\\"+filepath_ending_name], files, true)
+		OS.execute("powershell.exe", ["-Command", "tar -tf "+globals.TEMP_DIR.replace(" ", "` ")+"\\"+filepath_ending_name], files, true)
 		
 		files = str(files).trim_prefix("[\"").trim_suffix("\"]").split("\\r\\n")
 		
 		print("zip file tree: ",files)
 		
 		var output2 = []
-		OS.execute("powershell.exe", ["-Command", "tar -xvf "+Globals.TEMP_DIR.replace(" ", "` ")+"\\"+filepath_ending_name+" -C "+\
-		Globals.TEMP_DIR.replace(" ", "` ")], output2, true)
+		OS.execute("powershell.exe", ["-Command", "tar -xvf "+globals.TEMP_DIR.replace(" ", "` ")+"\\"+filepath_ending_name+" -C "+\
+		globals.TEMP_DIR.replace(" ", "` ")], output2, true)
 		print("Unzip ret: ", output2)
 	
 		filepath_ending_name = files[0].trim_suffix("/")
 		del_queue = [filepath_ending_name, filepath_ending_name+".zip"]
 	
-	if DirAccess.dir_exists_absolute(Globals.TEMP_DIR+"\\"+filepath_ending_name) and Globals.withhold_queue.size() > 0:
+	if DirAccess.dir_exists_absolute(globals.TEMP_DIR+"\\"+filepath_ending_name) and globals.withhold_queue.size() > 0:
 		print("Witholding detected... Processing...")
-		for withhold_token in Globals.withhold_queue:
-			OS.execute("powershell.exe", ["-Command", "rm -Recurse -Force "+Globals.TEMP_DIR.replace(" ", "` ") + "\\" + filepath_ending_name + "\\" + withhold_token])
+		for withhold_token in globals.withhold_queue:
+			OS.execute("powershell.exe", ["-Command", "rm -Recurse -Force "+globals.TEMP_DIR.replace(" ", "` ") + "\\" + filepath_ending_name + "\\" + withhold_token])
 	
-	output = Globals.upload_to_gradescope(tooltips[selected_course], selected_assignment, filepath_ending_name)
+	output = globals.upload_to_gradescope(tooltips[selected_course], selected_assignment, filepath_ending_name)
 	if output != [""]:
 		if output[0].begins_with("submitted! visit"):
-			$CenterContainer/VBoxContainer/Container/ErrorLabel.set("theme_override_colors/default_color", Color.GREEN)
-			$CenterContainer/VBoxContainer/Container/ErrorLabel.text = output[0].trim_suffix("\\r\\n")
+			error_label.set("theme_override_colors/default_color", Color.GREEN)
+			error_label.text = output[0].trim_suffix("\\r\\n")
 		else:
-			$CenterContainer/VBoxContainer/Container/ErrorLabel.text = "Uncaught error (report): " + str(output)
-			return
+			error_label.text = "Uncaught error (report, nonblocking): " + str(output)
 	
 	var outputrm = []
 	for f_name in del_queue:
-		OS.execute("powershell.exe", ["-Command", "rm -Recurse -Force "+Globals.TEMP_DIR.replace(" ", "` ") + "\\" + f_name], outputrm)
+		OS.execute("powershell.exe", ["-Command", "rm -Recurse -Force "+globals.TEMP_DIR.replace(" ", "` ") + "\\" + f_name], outputrm)
 	print("rm output: ", outputrm)
+	
+	return 2
 
 
 func _on_logoff_button_pressed():
 	Globals.username = ""
 	Globals.password = ""
 	get_tree().change_scene_to_file("res://Scenes/Main.tscn")
-
 
 func _on_Exceptions_edit_text_changed(new_text: String):
 	if new_text == "":

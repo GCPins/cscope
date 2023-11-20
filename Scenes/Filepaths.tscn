@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://c3bbxe36xkfe1"]
+[gd_scene load_steps=3 format=3 uid="uid://c3bbxe36xkfe1"]
 
 [ext_resource type="Script" path="res://Scripts/Filepaths.gd" id="1_yv0cf"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_w4e1b"]
+shadow_size = 2
 
 [node name="Filepaths" type="Control"]
 layout_mode = 3
@@ -11,29 +14,33 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_yv0cf")
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="CenterContainer" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
 
 [node name="Panel" type="Panel" parent="CenterContainer"]
+self_modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 
 [node name="ColorRect" type="ColorRect" parent="CenterContainer/Panel"]
 layout_mode = 2
-offset_left = -464.0
-offset_top = -266.0
-offset_right = 470.0
-offset_bottom = 262.0
+offset_left = -1560.0
+offset_top = -1528.0
+offset_right = 2775.0
+offset_bottom = 1878.0
 size_flags_vertical = 3
 mouse_filter = 2
 color = Color(0.00784314, 0.0117647, 0.0470588, 0.403922)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
-custom_minimum_size = Vector2(900, 500)
 layout_mode = 2
 
 [node name="UpperDisplay" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
@@ -129,7 +136,7 @@ text = "Enter Exceptions:"
 [node name="LineEdit" type="LineEdit" parent="CenterContainer/VBoxContainer/Exceptions"]
 layout_mode = 2
 size_flags_horizontal = 3
-placeholder_text = "*.out, *.tmp"
+placeholder_text = "*.out, *.tmp, .~nfs*"
 
 [node name="FileDialog" type="FileDialog" parent="CenterContainer/VBoxContainer/Exceptions"]
 size = Vector2i(392, 400)
@@ -138,6 +145,15 @@ popup_window = true
 [node name="Container" type="Container" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="LoadingLabel" type="Label" parent="CenterContainer/VBoxContainer/Container"]
+visible = false
+modulate = Color(0.34902, 0.94902, 0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Loading..."
+label_settings = SubResource("LabelSettings_w4e1b")
+horizontal_alignment = 1
 
 [node name="ErrorLabel" type="RichTextLabel" parent="CenterContainer/VBoxContainer/Container"]
 custom_minimum_size = Vector2(900, 0)

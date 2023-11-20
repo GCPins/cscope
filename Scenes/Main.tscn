@@ -14,7 +14,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_djdmy")
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="CenterContainer" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,14 +23,16 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Panel" type="Panel" parent="CenterContainer"]
+self_modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 
 [node name="ColorRect" type="ColorRect" parent="CenterContainer/Panel"]
+custom_minimum_size = Vector2(1280, 1280)
 layout_mode = 2
-offset_left = -464.0
-offset_top = -266.0
-offset_right = 470.0
-offset_bottom = 262.0
+offset_left = -2860.0
+offset_top = -1986.0
+offset_right = 2956.0
+offset_bottom = 2141.0
 size_flags_vertical = 3
 mouse_filter = 2
 color = Color(0.00784314, 0.0117647, 0.0470588, 0.403922)
@@ -96,6 +98,22 @@ visible = false
 modulate = Color(0.34902, 0.94902, 0, 1)
 layout_mode = 2
 text = "Currently Downloading Dependencies ..."
+label_settings = SubResource("LabelSettings_2a744")
+horizontal_alignment = 1
+
+[node name="LogLabel" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer"]
+visible = false
+modulate = Color(0.34902, 0.94902, 0, 1)
+layout_mode = 2
+text = "Logging in ..."
+label_settings = SubResource("LabelSettings_2a744")
+horizontal_alignment = 1
+
+[node name="LogErrorLabel" type="Label" parent="CenterContainer/VBoxContainer/VBoxContainer"]
+visible = false
+modulate = Color(0.94902, 0, 0, 1)
+layout_mode = 2
+text = "Error logging in!"
 label_settings = SubResource("LabelSettings_2a744")
 horizontal_alignment = 1
 

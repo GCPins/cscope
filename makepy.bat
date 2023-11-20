@@ -1,3 +1,5 @@
+:: Author: Brady Setser
+
 @echo off
 
 setlocal enabledelayedexpansion
@@ -20,8 +22,8 @@ if not exist "!directoryPath!" (
 )
 
 :: Copy files to the Python directory
-copy "courses.py" "!directoryPath!"
-copy "submission.py" "!directoryPath!"
+copy "Python/courses.py" "!directoryPath!"
+copy "Python/submission.py" "!directoryPath!"
 
 if errorlevel 1 (
     echo Failed to copy files to the Python directory.
