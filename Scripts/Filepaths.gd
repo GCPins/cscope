@@ -46,9 +46,14 @@ var cached_periods := -1
 func _physics_process(delta):
 	
 	if t != null and not t.is_alive():
-		match t.wait_to_finish():
-			2:
-				t = null
+		var val = t.wait_to_finish();
+		if val is String:
+			var error_label = $CenterContainer/VBoxContainer/Container/ErrorLabel
+			error_label.text = val
+			if not val.contains("error"):
+				error_label.set("theme_override_colors/default_color", Color.GREEN)
+			t = null
+			$CenterContainer/VBoxContainer/Container/LoadingLabel.visible = false
 	
 	time += delta
 	var periods := int(time/0.5)%3
@@ -83,26 +88,30 @@ func _on_line_edit_text_changed(new_text: String):
 
 func _on_submit_pressed():
 	print("Submission pressed")
-	$CenterContainer/VBoxContainer/Container/LoadingLabel.visible = true
 	
-	t = Thread.new()
-	t.start(_submit.bind(Globals, $CenterContainer/VBoxContainer/Container/ErrorLabel))
-
-func _submit(globals, error_label):
+	var error_label = $CenterContainer/VBoxContainer/Container/ErrorLabel
+	
+	$CenterContainer/VBoxContainer/Container/LoadingLabel.visible = true
 	
 	error_label.visible = true
 	error_label.text = ""
 	
 	error_label.set("theme_override_colors/default_color", Color.RED)
 	
+	t = Thread.new()
+	t.start(_submit.bind(Globals))
+
+func _submit(globals) -> String:
+	
 	var output := []
 	OS.execute("scp", ["-r",globals.username+globals.domain+":/home/"+globals.username+"/"+filepath, globals.TEMP_DIR], output, true, true)
 	if output != [""]:
+		var text
 		if output[0].begins_with("scp: "):
-			error_label.text = "File " + output[0].split(" ")[1] + " does not exist in " + globals.domain
+			text = "error: File " + output[0].split(" ")[1] + " does not exist in " + globals.domain
 		else:
-			error_label.text = "Uncaught error (report): " + str(output)
-		return
+			text = "Uncaught error (report): " + str(output)
+		return text
 	
 	var filepath_arr := filepath.split("/")
 	var filepath_ending_name: String = filepath_arr[filepath_arr.size()-1]
@@ -130,20 +139,20 @@ func _submit(globals, error_label):
 		for withhold_token in globals.withhold_queue:
 			OS.execute("powershell.exe", ["-Command", "rm -Recurse -Force "+globals.TEMP_DIR.replace(" ", "` ") + "\\" + filepath_ending_name + "\\" + withhold_token])
 	
+	var text : String
 	output = globals.upload_to_gradescope(tooltips[selected_course], selected_assignment, filepath_ending_name)
 	if output != [""]:
 		if output[0].begins_with("submitted! visit"):
-			error_label.set("theme_override_colors/default_color", Color.GREEN)
-			error_label.text = output[0].trim_suffix("\\r\\n")
+			text = output[0].trim_suffix("\\r\\n")
 		else:
-			error_label.text = "Uncaught error (report, nonblocking): " + str(output)
+			text = "Uncaught error (report, nonblocking): " + str(output)
 	
 	var outputrm = []
 	for f_name in del_queue:
 		OS.execute("powershell.exe", ["-Command", "rm -Recurse -Force "+globals.TEMP_DIR.replace(" ", "` ") + "\\" + f_name], outputrm)
 	print("rm output: ", outputrm)
 	
-	return 2
+	return text
 
 
 func _on_logoff_button_pressed():
