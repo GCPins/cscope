@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-# Author: GCPins, anabasis
-# CODE UNDER GPL
+
+# import necessary modules
+import getpass
+import pathlib
 
 from lxml import html
 import requests
@@ -44,7 +46,9 @@ def main():
 
     files = []
     if (os.path.isdir(file_input)):
-        files = [os.path.join(file_input, f) for f in os.listdir(file_input) if os.path.isfile(os.path.join(file_input, f))]
+        for file in list(map(str, list(pathlib.Path(file_input).rglob("*")))):
+            if not os.path.isdir(file):
+                files.append(file)
     else:
         files = file_input.split(' ')
     files = [i.replace("@|@"," ") for i in files]
@@ -169,7 +173,7 @@ def submit_submission(session, path, files):
     if submission_response['success'] == True:
         print('submitted! visit https://www.gradescope.com' + submission_response['url'])
     else:
-        print('unsuccesful!')
+        print('unsuccesful!', files)
 
 
 # python thing 
